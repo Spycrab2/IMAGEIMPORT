@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Image to JSON Converter</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #f0f2f5;
+            color: #333;
+        }
+        #container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            padding: 2rem;
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+        h1 {
+            color: #4a4a4a;
+            margin-bottom: 1.5rem;
+        }
+        input[type="file"], input[type="number"] {
+            width: 100%;
+            padding: 0.5rem;
+            margin: 0.5rem 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 0.7rem 1rem;
+            margin: 0.5rem 0;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #2980b9;
+        }
+        p {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: #666;
+        }
+        a {
+            color: #3498db;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <h1>Image to JSON Converter</h1>
+        <input type="file" id="imageInput" accept="image/*">
+        <button onclick="getImageSize()">Get Image Size</button>
+        <button onclick="reduceImageSize(50)">Reduce Size by 50%</button>
+        <button onclick="reduceImageSize(70)">Reduce Size by 70%</button>
+        <input type="number" id="widthInput" placeholder="Enter new width">
+        <input type="number" id="heightInput" placeholder="Enter new height">
+        <button onclick="convertImageToJson()">Convert and Download JSON</button>
+        <p>Use the converted JSON data in <a href="https://www.roblox.com/games/18163715514" target="_blank">this Roblox game</a>.</p>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>
