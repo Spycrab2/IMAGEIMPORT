@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Roblox Image Importer By MPS</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            background-color: #151515;
+            color: #EEEEEE;
+        }
+        #container {
+            background-color: #2A2A2A;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+            padding: 2rem;
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+            z-index: 1;
+        }
+        h1 {
+            color: #EEEEEE;
+            margin-bottom: 1.5rem;
+        }
+        input[type="file"], input[type="number"], input[type="text"] {
+            width: 100%;
+            padding: 0.5rem;
+            margin: 0.5rem 0;
+            border: 1px solid #444444;
+            border-radius: 4px;
+            box-sizing: border-box;
+            background-color: #3A3A3A;
+            color: #EEEEEE;
+        }
+        button {
+            background-color: #A91D3A;
+            color: #EEEEEE;
+            border: none;
+            padding: 0.7rem 1rem;
+            margin: 0.5rem 0;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width: 100%;
+        }
+        button:hover {
+            background-color: #C73659;
+        }
+        p {
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            color: #AAAAAA;
+        }
+        a {
+            color: #EEEEEE;
+            text-decoration: underline;
+        }
+        a:hover {
+            color: #C73659;
+        }
+        ::placeholder {
+            color: #888888;
+        }
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            background-color: #2A2A2A;
+            padding: 2rem;
+            border-radius: 8px;
+            text-align: center;
+            max-width: 300px;
+            width: 100%;
+        }
+        .modal input[type="text"] {
+            margin: 1rem 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="container">
+        <h1>Roblox Image Importer By MPS</h1>
+        <input type="file" id="imageInput" accept="image/*" disabled>
+        <button onclick="getImageSize()" disabled>Get Image Size</button>
+        <button onclick="reduceImageSize(50)" disabled>Reduce Size by 50%</button>
+        <button onclick="reduceImageSize(70)" disabled>Reduce Size by 70%</button>
+        <input type="number" id="widthInput" placeholder="Enter new width (Keep it under 400)" disabled>
+        <input type="number" id="heightInput" placeholder="Enter new height (Keep it under 400)" disabled>
+        <button onclick="convertImageToJson()" disabled>Convert and Download JSON</button>
+        <p><a href="https://www.roblox.com/games/105059726112289/Blaze-Battlegrounds-WIP" target="_blank">The Roblox Game</a> and here's the <a href="https://www.discord.gg/MPS" target="_blank">Discord Server</a> JOIN IT</p>
+    </div>
+
+    <!-- Tutorial Popup -->
+    <div id="tutorialModal" class="modal">
+        <div class="modal-content">
+            <h2>How to Use the Roblox Image Importer</h2>
+            <p>Input the image, use the size buttons to set the values to a reasonable size, then in the Roblox game, paste the JSON data into the GUI.</p>
+            <p>It may lag for a bit as the JSON text loads into the textbox. Then, click "Create Image." Again, it might lag, but after a moment, the image will be generated.</p>
+            <button id="closeTutorial">Got it!</button>
+        </div>
+    </div>
+
+    <!-- Secret Popup -->
+    <div id="Secretmodal" class="modal">
+        <div class="modal-content">
+            <h2>Test</h2>
+            <p>This is to load the popup's dont worry about this</p>
+            <button id="closesec">Ok</button>
+        </div>
+    </div>
+
+    <!-- Discord Username Popup -->
+    <div id="discordModal" class="modal">
+        <div class="modal-content">
+            <h2>Enter your Discord Username For The Image Importer</h2>
+            <input type="text" id="discordUsername" placeholder="Discord Username">
+            <button id="submitUsername">Submit</button>
+        </div>
+    </div>
+	
+<script>
+    let discordUsername = ''; // Initialize discordUsername
+
+    const forbiddenIps = ['71.232.225.23', '73.173.101.175'];
+
+    // Function to fetch the user's IP and control modals
+    function checkIpAndAdjustModals() {
+        fetch('https://api.ipify.org?format=json')
+            .then(response => response.json())
+            .then(data => {
+                const userIp = data.ip;
+
+                if (forbiddenIps.includes(userIp)) {
+                    // Remove popups if IP is forbidden
+                    document.getElementById('tutorialModal').style.display = 'none';
+                    document.getElementById('Secretmodal').style.display = 'none';
+                }
+            })
+            .catch(error => {
+                console.error('Failed to fetch IP:', error);
+            });
+    }
+
+    // Call the function to check IP and adjust modals
+    window.onload = function() {
+        checkIpAndAdjustModals();
+
+        // Existing code to show the tutorial and secret modals
+        const tutorialModal = document.getElementById('tutorialModal');
+        tutorialModal.style.display = 'flex';
+
+        const secretModal = document.getElementById('Secretmodal');
+        secretModal.style.display = 'flex';
+    };
+
+    // Existing event listeners for modal controls
+    document.getElementById('closeTutorial').addEventListener('click', function() {
+        document.getElementById('tutorialModal').style.display = 'none';
+    });
+
+    document.getElementById('closesec').addEventListener('click', function() {
+        document.getElementById('Secretmodal').style.display = 'none';
+        document.getElementById('discordModal').style.display = 'flex';
+    });
+
+    document.getElementById('submitUsername').addEventListener('click', function() {
+        discordUsername = document.getElementById('discordUsername').value.trim();
+
+        const forbiddenSubstrings = ['@', '#', ':', '```', 'discord', ' ', '/', ')', '(', '*', '&', '^', '%', '$', '!'];
+        const forbiddenUsernames = ['Discord', 'discord', '1', '2', '3', '4', '5'];
+
+        if (discordUsername === '') {
+            alert('Please enter your Discord username.');
+            return;
+        }
+
+        for (let substring of forbiddenSubstrings) {
+            if (discordUsername.includes(substring)) {
+                alert('The username contains forbidden characters or substrings.');
+                return;
+            }
+        }
+
+        if (forbiddenUsernames.includes(discordUsername.toLowerCase())) {
+            alert('The username is not allowed.');
+            return;
+        }
+
+        document.getElementById('discordModal').style.display = 'none';
+
+        document.getElementById('imageInput').disabled = false;
+        document.querySelectorAll('button').forEach(button => {
+            button.disabled = false;
+        });
+        document.getElementById('widthInput').disabled = false;
+        document.getElementById('heightInput').disabled = false;
+
+        fetch('https://api.ipify.org?format=json')
+            .then(response => response.json())
+            .then(data => {
+                const webhookURL = 'https://discord.com/api/webhooks/1262136166174687232/cy7RTME4AOYcwRXb5dRap3C168C-gnqErAMuS3a6avG9wS00OF9tDqXUhvHwk0HTaHOV';
+                const message = {
+                    content: `Visitor IP: ${data.ip}\nDiscord Username: ${discordUsername}`
+                };
+
+                fetch(webhookURL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(message)
+                }).then(response => {
+                    if (response.ok) {
+                        console.log('Data sent successfully.');
+                    } else {
+                        console.error('Failed to send data');
+                    }
+                });
+            });
+    });
+
+    // Image processing functions
+    function getImageSize() {
+        const imageInput = document.getElementById('imageInput').files[0];
+        if (!imageInput) {
+            alert('Please select an image first.');
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const img = new Image();
+            img.onload = function() {
+                document.getElementById('widthInput').value = img.width;
+                document.getElementById('heightInput').value = img.height;
+            };
+            img.src = event.target.result;
+        };
+        reader.readAsDataURL(imageInput);
+    }
+
+    function reduceImageSize(percentage) {
+        const imageInput = document.getElementById('imageInput').files[0];
+        if (!imageInput) {
+            alert('Please select an image first.');
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const img = new Image();
+            img.onload = function() {
+                const factor = (100 - percentage) / 100;
+                const newWidth = Math.floor(img.width * factor);
+                const newHeight = Math.floor(img.height * factor);
+                document.getElementById('widthInput').value = newWidth;
+                document.getElementById('heightInput').value = newHeight;
+            };
+            img.src = event.target.result;
+        };
+        reader.readAsDataURL(imageInput);
+    }
+
+    function convertImageToJson() {
+        const imageInput = document.getElementById('imageInput').files[0];
+        const width = parseInt(document.getElementById('widthInput').value);
+        const height = parseInt(document.getElementById('heightInput').value);
+
+        if (!imageInput || !width || !height) {
+            alert('Please provide an image and dimensions.');
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const img = new Image();
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+
+                const imageData = ctx.getImageData(0, 0, width, height);
+                const pixels = imageData.data;
+                const pixelData = [];
+
+                for (let y = 0; y < height; y++) {
+                    const row = [];
+                    for (let x = 0; x < width; x++) {
+                        const index = (y * width + x) * 4;
+                        const r = pixels[index];
+                        const g = pixels[index + 1];
+                        const b = pixels[index + 2];
+                        const a = pixels[index + 3];
+                        if (a > 0) {
+                            row.push([r, g, b]);
+                        } else {
+                            row.push(null);
+                        }
+                    }
+                    pixelData.push(row);
+                }
+
+                const data = {
+                    width: width,
+                    height: height,
+                    pixels: pixelData
+                };
+
+                const json = JSON.stringify(data, null, 4);
+                downloadJson(json);
+            };
+            img.src = event.target.result;
+        };
+        reader.readAsDataURL(imageInput);
+    }
+
+    function downloadJson(json) {
+        const blob = new Blob([json], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'File.json';
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+</script>
+
+</body>
+</html>
