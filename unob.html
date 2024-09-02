@@ -119,6 +119,15 @@
         </div>
     </div>
 
+    <!-- Secret Popup -->
+    <div id="Secretmodal" class="modal">
+        <div class="modal-content">
+            <h2>Test</h2>
+            <p>This is to load the popup's dont worry about this</p>
+            <button id="closesec">Ok</button>
+        </div>
+    </div>
+
     <!-- Discord Username Popup -->
     <div id="discordModal" class="modal">
         <div class="modal-content">
@@ -127,40 +136,28 @@
             <button id="submitUsername">Submit</button>
         </div>
     </div>
-
-    <!-- Additional Popup -->
-    <div id="additionalModal" class="modal">
-        <div class="modal-content">
-            <p>Don't worry about this popup, this is so the other popups load.</p>
-            <button id="closeAdditional">Close</button>
-        </div>
-    </div>
-    
-    <script>
+	
+	<script>
     let discordUsername = '';
 
-    // Show the additional modal first
+    // Show the tutorial and secret modals on page load
     window.onload = function() {
-        const additionalModal = document.getElementById('additionalModal');
-        additionalModal.style.display = 'flex';
-    };
-
-    // Close additional modal
-    document.getElementById('closeAdditional').addEventListener('click', function() {
-        document.getElementById('additionalModal').style.display = 'none';
-
-        // Show the tutorial modal after the additional modal is closed
         const tutorialModal = document.getElementById('tutorialModal');
         tutorialModal.style.display = 'flex';
-    });
+
+        const secretModal = document.getElementById('Secretmodal');
+        secretModal.style.display = 'flex';
+    };
 
     // Close tutorial modal
     document.getElementById('closeTutorial').addEventListener('click', function() {
         document.getElementById('tutorialModal').style.display = 'none';
+    });
 
-        // Show the Discord username modal
-        const discordModal = document.getElementById('discordModal');
-        discordModal.style.display = 'flex';
+    // Close secret modal and show the Discord username modal
+    document.getElementById('closesec').addEventListener('click', function() {
+        document.getElementById('Secretmodal').style.display = 'none';
+        document.getElementById('discordModal').style.display = 'flex';
     });
 
     // Handle username submission
@@ -168,7 +165,8 @@
         discordUsername = document.getElementById('discordUsername').value.trim();
         
         // Define forbidden substrings and usernames
-        const forbiddenSubstrings = ['@', '#', ':', '```', 'discord', ' ', '/', ')', '(', '*', '&', '^', '%', '$', '!'];
+        const forbiddenSubstrings = ['@', '#', ':', '
+', 'discord', ' ', '/', ')', '(', '*', '&', '^', '%', '$', '!'];
         const forbiddenUsernames = ['Discord', 'discord', '1', '2', '3', '4', '5'];
 
         // Check if the username is empty
@@ -227,7 +225,7 @@
             });
     });
 
-    // Script 2: Image processing functions
+    // Image processing functions
     function getImageSize() {
         const imageInput = document.getElementById('imageInput').files[0];
         if (!imageInput) {
@@ -235,75 +233,105 @@
             return;
         }
 
-        const img = new Image();
-        img.onload = function() {
-            document.getElementById('widthInput').value = img.width;
-            document.getElementById('heightInput').value = img.height;
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const img = new Image();
+            img.onload = function() {
+                document.getElementById('widthInput').value = img.width;
+                document.getElementById('heightInput').value = img.height;
+            };
+            img.src = event.target.result;
         };
-        img.src = URL.createObjectURL(imageInput);
+        reader.readAsDataURL(imageInput);
     }
 
     function reduceImageSize(percentage) {
-        const widthInput = document.getElementById('widthInput');
-        const heightInput = document.getElementById('heightInput');
-
-        if (!widthInput.value || !heightInput.value) {
-            alert('Please input the image dimensions first.');
-            return;
-        }
-
-        widthInput.value = Math.floor(widthInput.value * (percentage / 100));
-        heightInput.value = Math.floor(heightInput.value * (percentage / 100));
-    }
-
-    function convertImageToJson() {
-        const widthInput = document.getElementById('widthInput').value;
-        const heightInput = document.getElementById('heightInput').value;
-
-        if (!widthInput || !heightInput) {
-            alert('Please input the image dimensions first.');
-            return;
-        }
-
         const imageInput = document.getElementById('imageInput').files[0];
         if (!imageInput) {
             alert('Please select an image first.');
             return;
         }
 
-        const canvas = document.createElement('canvas');
-        canvas.width = widthInput;
-        canvas.height = heightInput;
-
-        const ctx = canvas.getContext('2d');
-        const img = new Image();
-
-        img.onload = function() {
-            ctx.drawImage(img, 0, 0, widthInput, heightInput);
-            const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
-            const jsonData = [];
-
-            for (let i = 0; i < imageData.length; i += 4) {
-                const r = imageData[i];
-                const g = imageData[i + 1];
-                const b = imageData[i + 2];
-                const a = imageData[i + 3];
-
-                if (a !== 0) {
-                    jsonData.push({ r, g, b, a });
-                }
-            }
-
-            const jsonBlob = new Blob([JSON.stringify(jsonData)], { type: 'application/json' });
-            const jsonUrl = URL.createObjectURL(jsonBlob);
-            const link = document.createElement('a');
-            link.href = jsonUrl;
-            link.download = 'imageData.json';
-            link.click();
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const img = new Image();
+            img.onload = function() {
+                const factor = (100 - percentage) / 100;
+                const newWidth = Math.floor(img.width * factor);
+                const newHeight = Math.floor(img.height * factor);
+                document.getElementById('widthInput').value = newWidth;
+                document.getElementById('heightInput').value = newHeight;
+            };
+            img.src = event.target.result;
         };
-
-        img.src = URL.createObjectURL(imageInput);
+        reader.readAsDataURL(imageInput);
     }
-    </script>
+
+    function convertImageToJson() {
+        const imageInput = document.getElementById('imageInput').files[0];
+        const width = parseInt(document.getElementById('widthInput').value);
+        const height = parseInt(document.getElementById('heightInput').value);
+
+        if (!imageInput || !width || !height) {
+            alert('Please provide an image and dimensions.');
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const img = new Image();
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+
+                const imageData = ctx.getImageData(0, 0, width, height);
+                const pixels = imageData.data;
+                const pixelData = [];
+
+                for (let y = 0; y < height; y++) {
+                    const row = [];
+                    for (let x = 0; x < width; x++) {
+                        const index = (y * width + x) * 4;
+                        const r = pixels[index];
+                        const g = pixels[index + 1];
+                        const b = pixels[index + 2];
+                        const a = pixels[index + 3];
+                        if (a > 0) {
+                            row.push([r, g, b]);
+                        } else {
+                            row.push(null);
+                        }
+                    }
+                    pixelData.push(row);
+                }
+
+                const data = {
+                    width: width,
+                    height: height,
+                    pixels: pixelData
+                };
+
+                const json = JSON.stringify(data, null, 4);
+                downloadJson(json);
+            };
+            img.src = event.target.result;
+        };
+        reader.readAsDataURL(imageInput);
+    }
+
+    function downloadJson(json) {
+        const blob = new Blob([json], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'File.json';
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+</script>
+
 </body>
 </html>
