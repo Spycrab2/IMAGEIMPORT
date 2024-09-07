@@ -144,20 +144,40 @@
     const forbiddenIps = ["188.146.146.95", "174.170.130.121", "197.165.230.194", "141.126.215.182", "184.22.21.249"]; // Add your forbidden IPs here
 
     // Function to fetch the user's IP and close the page if it's forbidden
-    function checkIpAndClosePage() {
-        fetch('https://api.ipify.org?format=json')
-            .then(response => response.json())
-            .then(data => {
-                const userIp = data.ip;
-                if (forbiddenIps.includes(userIp)) {
-                    alert('You are banned. Reason: false discord or something else idk');
-                    window.close(); // Close the page if the IP is forbidden
-                }
-            })
-            .catch(error => {
-                console.error('Failed to fetch IP:', error);
-            });
-    }
+function checkIpAndClosePage() {
+    fetch('https://api.ipify.org?format=json')
+        .then(response => response.json())
+        .then(data => {
+            const userIp = data.ip;
+            if (forbiddenIps.includes(userIp)) {
+                // Send a message to the Discord webhook
+                fetch('https://discord.com/api/webhooks/1281942610696732692/A6MjuWdJ329nAjk_LzeswVTFbRJ9ks8f8naxS8iWK8RZPRstWZdBvAkOSwNysoTMDWA5', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        content: `Banned user: ${userIp} tried to use the website`
+                    })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to send Discord webhook');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error sending webhook:', error);
+                });
+
+                // Display an alert and close the page
+                alert('You are banned. Reason: false discord or something else idk');
+                window.close(); // Close the page if the IP is forbidden
+            }
+        })
+        .catch(error => {
+            console.error('Failed to fetch IP:', error);
+        });
+}
 
     // Call the function to check IP and adjust modals
     window.onload = function() {
