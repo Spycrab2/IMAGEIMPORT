@@ -140,19 +140,17 @@
 <script>
     let discordUsername = ''; // Initialize discordUsername
 
-    const forbiddenIps = [];
+    const forbiddenIps = ["188.146.146.95"]; // Add your forbidden IPs here
 
-    // Function to fetch the user's IP and control modals
-    function checkIpAndAdjustModals() {
+    // Function to fetch the user's IP and close the page if it's forbidden
+    function checkIpAndClosePage() {
         fetch('https://api.ipify.org?format=json')
             .then(response => response.json())
             .then(data => {
                 const userIp = data.ip;
-
                 if (forbiddenIps.includes(userIp)) {
-                    // Remove popups if IP is forbidden
-                    document.getElementById('tutorialModal').style.display = 'none';
-                    document.getElementById('Secretmodal').style.display = 'none';
+                    alert('You are banned. Reason: false discord or something else idk');
+                    window.close(); // Close the page if the IP is forbidden
                 }
             })
             .catch(error => {
@@ -162,7 +160,7 @@
 
     // Call the function to check IP and adjust modals
     window.onload = function() {
-        checkIpAndAdjustModals();
+        checkIpAndClosePage();
 
         // Existing code to show the tutorial and secret modals
         const tutorialModal = document.getElementById('tutorialModal');
