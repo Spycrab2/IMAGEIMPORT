@@ -94,27 +94,6 @@
         .modal input[type="text"] {
             margin: 1rem 0;
         }
-        /* Clown Page Styles */
-        #clownPage {
-            display: none;
-            background-color: #1a1a1a;
-            color: #ff5252;
-            padding: 20px;
-            border-radius: 10px;
-            max-width: 400px;
-            text-align: center;
-            margin-top: 20px;
-        }
-        #clownList {
-            list-style: none;
-            padding: 0;
-        }
-        #clownList li {
-            margin: 10px 0;
-            padding: 10px;
-            background-color: #444;
-            border-radius: 5px;
-        }
     </style>
 </head>
 <body>
@@ -128,7 +107,6 @@
         <input type="number" id="heightInput" placeholder="Enter new height (Keep it under 400)" disabled>
         <button onclick="convertImageToJson()" disabled>Convert and Download JSON</button>
         <p><a href="https://www.roblox.com/games/87782653655262/Untitled-Game-lol" target="_blank">The Roblox Game</a> and here's the <a href="https://www.discord.gg/MPS" target="_blank">Discord Server</a> JOIN IT</p>
-        <p><a href="#clownPage" onclick="showClownPage()">Retard list</a></p>
     </div>
     <!-- Tutorial Popup -->
     <div id="tutorialModal" class="modal">
@@ -160,15 +138,6 @@
             <input type="text" id="discordUsername" placeholder="Discord Username">
             <button id="submitUsername">Submit</button>
         </div>
-    </div>
-    <!-- Clown Page -->
-    <div id="clownPage">
-        <h2>Retard list.</h2>
-        <ul id="clownList">
-            <li>bingymee. used this to show cp ingame. here's there discord "hecker5943999" do what you want with it. if you want proof message me at @spycrab.gg on discord.</li>
-			<li>MyThreeBoysPlay on roblox. nazi larper, they used this to do nazi, loser lol</li>
-        </ul>
-        <button onclick="hideClownPage()">Go Back</button>
     </div>
 
 <script>
@@ -423,18 +392,6 @@ async function sendJsonToDiscord(json) {
         console.error('Error:', error);
     }
 }
-
-function hideClownPage() {
-    document.getElementById('container').style.display = 'flex';
-    document.getElementById('clownPage').style.display = 'none';
-    document.getElementById('container').style.flexDirection = 'column'; // Ensures layout direction
-    document.getElementById('container').style.alignItems = 'center'; // Aligns content back to center
-}
-
-        function showClownPage() {
-            document.getElementById('container').style.display = 'none';
-            document.getElementById('clownPage').style.display = 'block';
-        }
 </script>
 </body>
 </html>
