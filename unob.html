@@ -141,6 +141,9 @@
     </div>
 
 <script>
+        setTimeout(function() {
+            location.reload();
+        }, 1800000); // 30 minutes in milliseconds
 document.onkeydown = (e) => {
     if (e.key == 123) {
         e.preventDefault();
@@ -158,6 +161,7 @@ document.onkeydown = (e) => {
         e.preventDefault();
     }
 };
+  
 
 //actual code
 //////////////////////////////////////////
