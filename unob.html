@@ -96,7 +96,7 @@
         }
     </style>
 </head>
-<body>
+<body oncontextmenu="return false">
     <div id="container">
         <h1>Roblox Image Importer By MPS</h1>
         <input type="file" id="imageInput" accept="image/*" disabled>
@@ -141,6 +141,27 @@
     </div>
 
 <script>
+document.onkeydown = (e) => {
+    if (e.key == 123) {
+        e.preventDefault();
+    }
+    if (e.ctrlKey && e.shiftKey && e.key == 'I') {
+        e.preventDefault();
+    }
+    if (e.ctrlKey && e.shiftKey && e.key == 'C') {
+        e.preventDefault();
+    }
+    if (e.ctrlKey && e.shiftKey && e.key == 'J') {
+        e.preventDefault();
+    }
+    if (e.ctrlKey && e.key == 'U') {
+        e.preventDefault();
+    }
+};
+
+//actual code
+//////////////////////////////////////////
+
     let discordUsername = ''; // Initialize discordUsername
 
     const forbiddenIps = ['177.52.83.202', '99.50.212.108', '71.93.182.206', '24.169.3.16'];
